@@ -1,4 +1,6 @@
 <?php
+
+
 class WCPFrontEndStudentClassModel
 {
     public $wpdb;

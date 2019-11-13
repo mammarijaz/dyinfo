@@ -16,7 +16,7 @@ class WCP_BackEnd_Schools_Model {
         add_action('wp_ajax_nopriv_WCP_BackEnd_Schools_Model::delete_school', array($this, 'wcp_delete_school'));
         add_action('wp_ajax_WCP_BackEnd_Schools_Model::delete_school', array($this, 'wcp_delete_school'));
 
-        add_action('wp_ajax_WCP_BackEnd_Schools_Model::get_schools', array($this, 'get_schools'));
+        add_action('wp_ajax_WCP_BackEnd_Schools_Model::get_schools', Array($this, 'get_schools'));
         add_action('wp_ajax_nopriv_WCP_BackEnd_Schools_Model::get_schools', array($this, 'get_schools'));
 
         add_action('wp_ajax_WCP_BackEnd_Schools_Model::get_school_by_id', Array($this, 'get_school_by_id'));
@@ -64,11 +64,8 @@ class WCP_BackEnd_Schools_Model {
             $response['status'] = 0;
             $response['errors'] = $errorArray;
         } else {
-            $email = $_POST['input_email'];
-            $pass = wcp_rand_string(8);
             $new_user_id = wp_create_user( $email, $pass, $email );
             if($new_user_id) {
-
                 $user = get_userdata( $new_user_id );   
                 $first_name = isset($_REQUEST["input_first_name"]) ? $_REQUEST["input_first_name"] :"";
                 $last_name = isset($_REQUEST["input_last_name"]) ? $_REQUEST["input_last_name"] :"";
@@ -87,6 +84,7 @@ class WCP_BackEnd_Schools_Model {
     }
 
     public function get_schools() {
+
         global $wpdb,$wp;
         $data = array();
         $obj_result = new \stdclass();
@@ -100,8 +98,7 @@ class WCP_BackEnd_Schools_Model {
         $table_name = $this->table_name;
         $sql = "SELECT * FROM $table_name ".$where ;
         $result = $wpdb->get_results($sql);
-         
-
+        // print_r($result);
         $totalData = 0;
         $totalFiltered = 0;
         if (count($result) > 0) {
@@ -122,9 +119,9 @@ class WCP_BackEnd_Schools_Model {
         if (isset($requestData['start']) && $requestData['start'] != '' && isset($requestData['length']) && $requestData['length'] != '') {
             $sql .= " LIMIT " . $requestData['start'] . "," . $requestData['length'];
         }
+
         $service_price_list = $wpdb->get_results($sql, "OBJECT");
         $arr_data = array();
-        $temp = array();
         $arr_data = $result;
 
         foreach ($service_price_list as $row) {
@@ -136,7 +133,6 @@ class WCP_BackEnd_Schools_Model {
             $created_date = date( "m/d/Y", strtotime( $row->created_date));
             $temp['created_date'] = $created_date;
             $temp['wp_user_id'] = $row->wp_user_id;
-            $temp['wp_user_link'] = "<a href='users.php?user_id=".$row->wp_user_id."'>#".$row->wp_user_id."</a>";
              $user_info = get_userdata($row->wp_user_id);
             $temp['first_name'] = $user_info->first_name;
             $temp['last_name'] = $user_info->last_name;
@@ -152,6 +148,7 @@ class WCP_BackEnd_Schools_Model {
             $data[] = $temp;
             $id = "";
         }
+
         $json_data = array(
             "draw" => intval($requestData['draw']),
             "recordsTotal" => intval($totalData),
@@ -162,7 +159,7 @@ class WCP_BackEnd_Schools_Model {
         echo json_encode($json_data);
         exit(0);
 
-        
+        return $rows;
     }
 
     public function get_schools_array() {
@@ -249,7 +246,6 @@ class WCP_BackEnd_Schools_Model {
     
     
     public function wcp_delete_school() {
-        //print_r($_REQUEST);
         $table_name = $this->table_name;
         global $wpdb;
         if(isset($_REQUEST["id"])){
@@ -260,10 +256,6 @@ class WCP_BackEnd_Schools_Model {
                 ),
                 array( 'id' => $_REQUEST['id'] )
             );
-
-            if($wpdb->last_error !== '') :
-                $wpdb->print_error();
-            endif;
             /*$wpdb->delete($table_name,
                  [ 'id' => $_REQUEST['id'] ],
                  [ '%d' ] );*/

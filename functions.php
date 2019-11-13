@@ -36,6 +36,7 @@ function wcp_send_mail($to, $subject, $body2)
     $blogtime = current_time('mysql');
     $to = $to;
     $subject = $blog_title . ' - ' . $subject;
+    $body = '';
     $body .= '<div style="max-width:700px;margin:0 auto;text-align:left; mso-element-frame-width:700px; mso-element:para-border-div; mso-element-left:center; mso-element-wrap:no-wrap-beside;background:#ededed ">';
     $body .= '<div style="background:rgba(255,255,255,0.8)!important;background:#fff;padding: 20px 20px 50px;">';
     //<img src="'.wp_get_attachment_url(373).'" style="width: 380px;max-width: 100%;margin: 0 auto;display: block;">
@@ -55,14 +56,5 @@ function wcp_send_mail($to, $subject, $body2)
     $headers = array('Content-Type: text/html; charset=UTF-8');
     return wp_mail($to, $subject, $body, $headers);
 }
-
-function wcp_rand_string( $length ) {
-
-    $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    return substr(str_shuffle($chars),0,$length);
-
-}
-
-
 
 ?>

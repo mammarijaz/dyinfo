@@ -138,7 +138,6 @@ if (!empty($current_user->id) && in_array('wcp_teacher', (array)$current_user->r
 
 
     <?php } else { ?>
-
         <div class="alert alert-danger signup-error" style="display:none">
             <strong>Danger!</strong> You'r not allowed to view this page
         </div>
