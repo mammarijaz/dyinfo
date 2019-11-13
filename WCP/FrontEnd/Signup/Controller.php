@@ -23,9 +23,9 @@ class WCP_FrontEnd_Signup_Controller
     {
 
 
-        wp_deregister_script('jquery');
-        wp_register_script('jquery', 'http://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js', false, '1.11.3');
-        wp_enqueue_script('jquery');
+//        wp_deregister_script('jquery');
+//        wp_register_script('jquery', 'http://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js', false, '1.11.3');
+//        wp_enqueue_script('jquery');
 
 
         wp_enqueue_script('wcp-signup-common-js', WCP_PLUGIN_URL . '/WCP/Common/common.js');

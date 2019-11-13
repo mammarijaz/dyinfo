@@ -220,10 +220,10 @@ class WCP_Common_Student_Model
         return $json_data;
     }
 
-    public function get_students_by_class_and_teacher($school_id, $teacher_id)
+    public function get_students_by_class_and_teacher($school_id, $teacher_id, $is_deleted = 1)
     {
         if (empty($school_id) && empty($teacher_id)) {
-            return $this->get_students([]);
+            return $this->get_students();
         } else {
             global $wpdb, $wp;
             $data = array();
@@ -232,6 +232,13 @@ class WCP_Common_Student_Model
             //$requestData = $_REQUEST;
             //This is for Search
             $where = " WHERE school_id = " . $school_id . ' AND teacher_id = ' . $teacher_id;
+
+            if ($is_deleted == 2) {
+                $where .= ' and is_deleted = 0';
+            } else if ($is_deleted == 1) {
+                $where .= ' and is_deleted = 1';
+            }
+
             $table_name = $this->table_name;
             $sql = "SELECT * FROM $table_name " . $where;
             $result = $wpdb->get_results($sql);

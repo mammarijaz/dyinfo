@@ -22,9 +22,7 @@ if (!empty($current_user->id) && in_array('wcp_teacher', (array)$current_user->r
     ?>
 
     <a target="_blank" href="<?php echo home_url('/make-class-room/') ?>"> Make Class room </a>
-    &nbsp;
     <a target="_blank" href="<?php echo home_url('/make-class-room/') ?>"> Assign student to class room </a>
-    &nbsp;
     <a target="_blank" href="<?php echo home_url('/list-of-class-rooms/') ?>"> Class room list </a>
 
     <p id="err_msg"></p>

@@ -142,7 +142,7 @@
           var ajaxurl = This.attr("action");
           $('.load-spinner').addClass("show");
 
-        //  var activeEditor = tinyMCE.get('content');
+          var activeEditor = tinyMCE.get('content');
 
           $.post(ajaxurl, input_data, function(response) {
             var response = JSON.parse(response);
@@ -180,7 +180,7 @@
                         {mData: 'school_name'},
                         {mData: 'school_phone'},
                         {mData: 'school_address'},
-                        {mData: 'wp_user_link'},
+                        {mData: 'wp_user_id'},
                         {mData: 'created_date'},
                         {mData: 'action'}
                     ],
@@ -195,12 +195,13 @@
         }
       function wcp_delete_row(id) {
             if (confirm("Are you sure?")) {
+          
+
                 jQuery.ajax({
                     type: 'POST',
                     url: '<?php echo admin_url('admin-ajax.php'); ?>',
                     data: {"action": "WCP_BackEnd_Schools_Model::delete_school", id: id},
                     success: function (data) {
-                      console.log(data);
                         if (data == "success") {
                             reload_table();
                         }
