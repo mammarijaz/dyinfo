@@ -1,0 +1,25 @@
+.wcp *{
+	font-family: inherit;
+}
+.modal{
+	padding-top: 4em;
+}
+.modal-title{
+	display: inline-block;
+}
+.wcp-invite-box{
+    background:  #3f3f3f;
+	color: #fff;
+    padding: 10px 20px;
+}
+.modal-backdrop{display: none;}
+.table > tbody > tr > td, .table > tbody > tr > th, .table > tfoot > tr > td, .table > tfoot > tr > th, .table > thead > tr > td, .table > thead > tr > th{
+	vertical-align: middle!important;
+}
+
+.minimal.modal-open #content{
+	z-index: 999;
+}
+input[type="date"].form-control, input[type="time"].form-control, input[type="datetime-local"].form-control, input[type="month"].form-control{
+	line-height: normal !important;
+}

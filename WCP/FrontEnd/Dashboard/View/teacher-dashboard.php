@@ -7,7 +7,6 @@
 
 <?php
 
-
 global $WCP_Common_Student_Model, $WCP_Common_Teacher_Model;
 ## get user from the wp_user table
 $current_user = wp_get_current_user();
@@ -72,6 +71,7 @@ if (!empty($current_user->id) && in_array('wcp_teacher', (array)$current_user->r
                                     <li class="deleteStudent" data-attr="<?php echo $value['id'] ?>"><a
                                                 href="#">Delete</a>
                                     </li>
+
                                 </ul>
                             </div>
                         <?php }

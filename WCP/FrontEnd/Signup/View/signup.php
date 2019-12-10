@@ -1,6 +1,27 @@
 <?php 
-$school_id = isset($_GET["school_id"]) ? $_GET["school_id"] :"0";
-$teacher_id = isset($_GET["teacher_id"]) ? $_GET["teacher_id"] :"0";
+$school_id = 0;
+$teacher_id = 0;
+$user_email = ""; 
+if (!empty($_GET['query']) && !empty($_GET['user_type'])){
+   $register_as = $_GET['user_type'];
+   ## reference
+   $referrer_id = base64_decode($_GET['query']);
+
+   //If School Inviting
+   $teacher_id =  $referrer_id;
+   $school_id =  $referrer_id;
+   $user_email = isset($_GET["user_email"]) ? $_GET["user_email"] :"";
+
+   //If Teacher Inviting
+   if($register_as == "student"){
+      $teacher_id =  $referrer_id;
+      $school_id = isset($_GET["school_ref"]) ? base64_decode($_GET['school_ref']): 0;
+   }
+
+   #$school_id = isset($_GET["school_id"]) ? $_GET["school_id"] :"0";
+   #$teacher_id = isset($_GET["teacher_id"]) ? $_GET["teacher_id"] :"0";
+}
+
 ?>
 <div id="registerBox" class="wcp-form-box">
    <form method="POST" name="wcp_form_signup" id="wcp_form_signup" action="<?php echo admin_url('admin-ajax.php'); ?>"  enctype="multipart/form-data" class="form-signin">
@@ -12,6 +33,8 @@ $teacher_id = isset($_GET["teacher_id"]) ? $_GET["teacher_id"] :"0";
          <input type="hidden" name="school_id" value="<?php echo $school_id; ?>">
          <?php if( in_array($user_type, array( "wcp_student") ) ){ ?>
             <input type="hidden" name="teacher_id" value="<?php echo $teacher_id; ?>">
+         <?php }else{ ?>
+         
          <?php } ?>
        <?php } ?>
 
@@ -69,7 +92,7 @@ $teacher_id = isset($_GET["teacher_id"]) ? $_GET["teacher_id"] :"0";
       </div>
       <div class="form-group">  
          <label>Email Address: <span style="color: red">*</span></label><br>
-         <input type="email" id="input_email" name="input_email" class="form-control" style="width:100%;" >
+         <input type="email" id="input_email" name="input_email" class="form-control" style="width:100%;" value="<?php echo $user_email; ?>" >
       </div>
       <hr/>
       <h5><strong>Create a password:</strong></h5>

@@ -18,19 +18,43 @@ include_once(dirname(__FILE__) . "/WCP/Common/Signup/Controller.php");
 include_once(dirname(__FILE__) . "/WCP/Common/School/Controller.php");
 include_once(dirname(__FILE__) . "/WCP/Common/Teacher/Controller.php");
 include_once(dirname(__FILE__) . "/WCP/Common/Student/Controller.php");
+include_once(dirname(__FILE__) . "/WCP/Common/Classes/Controller.php");
 
 ## Dashboard controller
 include_once(dirname(__FILE__) . "/WCP/FrontEnd/Dashboard/Controller.php");
 
 ## Class Room Controller
-include_once(dirname(__FILE__) . "/WCP/FrontEnd/StudentClasses/WCP_FrontEnd_StudentClass_Controller.php");
+include_once(dirname(__FILE__) . "/WCP/FrontEnd/Classes/Controller.php");
+include_once(dirname(__FILE__) . "/WCP/FrontEnd/StudentClasses/Controller.php");
 include_once(dirname(__FILE__) . "/WCP/BackEnd/School/Controller.php");
 include_once(dirname(__FILE__) . "/WCP/FrontEnd/Signup/Controller.php");
+include_once(dirname(__FILE__) . "/WCP/FrontEnd/Student/Controller.php");
 
 
 global $wcp_db_version;
 $wcp_db_version = '1.0';
 
+
+add_action('wp_enqueue_scripts',"wcp_scripts");
+function wcp_scripts(){
+
+   /* wp_register_style('wcp-datatable', '//cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css');
+
+    wp_register_script('wcp-datatable', '//cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js', false);*/
+    if(!is_admin()){
+    wp_register_style('wcp-custom-css', WCP_PLUGIN_URL . '/assets/css/wcp-custom.css');
+    wp_register_style('wcp-datatable-css', 'https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css');
+    wp_enqueue_style('wcp-font-roboto', 'https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap');
+    wp_register_script('wcp-datatable-js', 'https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js',array( 'jquery' ));
+    wp_enqueue_script("wcp-datatable-js");
+
+    wp_enqueue_style("wcp-datatable-css");
+    wp_enqueue_style("wcp-custom-css");
+    
+    wp_register_script('wcp-common', WCP_PLUGIN_URL . '/WCP/Common/common.js', false);
+    
+    }
+}
 
 /**
  * ON Wordpress plugin activation
@@ -149,7 +173,6 @@ function wcp_install()
 
     dbDelta($studentSql);
 
-
     add_option('wcp_db_version', $wcp_db_version);
 }
 
@@ -165,35 +188,19 @@ function add_roles_on_wcp_activation()
 register_activation_hook(__FILE__, 'add_roles_on_wcp_activation');
 
 
-/**
- *
- * */
-
 /*Admin Menus*/
-
 add_action('admin_menu', 'wcp_admin_menu');
 function wcp_admin_menu()
 {
     add_menu_page('Schools', 'Schools', 'manage_options', 'wcp-schools', 'wcp_schools_html');
-    /*  add_submenu_page( '', 'Questions', 'Questions', 'manage_options', 'wcp-questions', 'wcp_questions_admin_html');
-      add_submenu_page( '', 'Answers', 'Answers', 'manage_options', 'wcp-answers', 'wcp_answers_admin_html');
-      add_submenu_page( 'wcp-quizzes', 'Import Quiz ', 'Import Quiz', 'manage_options', 'wcp-import-questions', 'wcp_import_questions_admin_html');*/
+    /*  add_submenu_page( '', 'Questions', 'Questions', 'manage_options', 'wcp-questions', 'wcp_questions_admin_html');*/
 
 }
 
 function wcp_schools_html()
 {
     echo do_shortcode("[wcp_schools_table]");
-}/*
-function wcp_questions_admin_html() {
-    echo do_shortcode("[wcp_questions_table]");
 }
-function wcp_answers_admin_html() {
-    echo do_shortcode("[wcp_answers_table]");
-}
-function wcp_import_questions_admin_html() {
-    echo do_shortcode("[wcp_quizzes_import_table]");
-}*/
 /*End Admin Menus*/
 
 function wcp_ajaxurl()
@@ -251,329 +258,10 @@ function myErrorHandler($errno, $errstr, $errfile, $errline)
     }
 
     /* Don't execute PHP internal error handler */
-
     return true;
 }
 
 $old_error_handler = set_error_handler("myErrorHandler");
-
-//## School registration ajax request.
-//add_action('wp_ajax_wcp_school_registration', 'school_registration_ajax_request__');
-//add_action('wp_ajax_nopriv_wcp_school_registration', 'school_registration_ajax_request__');
-//
-//## school registration
-//function school_registration_ajax_request__()
-//{
-//
-//    print_r($_POST);
-//    return;
-//}
-
-
-## School registration ajax request.
-//add_action('wp_ajax_wcp_school_registration', school_registration_ajax_request());
-//add_action('wp_ajax_nopriv_wcp_school_registration', school_registration_ajax_request());
-//function school_registration_ajax_request()
-//{
-//    if ($_POST['action'] == 'wcp_school_registration') {
-//        $response = null;
-//        $wp_user_name = null;
-//        if (!empty($_POST['school_admin_frist_name']) || !empty($_POST['school_admin_last_name'])) {
-//            $wp_user_name = $_POST['school_admin_frist_name'] . $_POST['school_admin_last_name'];
-//        } else {
-//            $response = 'User name is missing in account details';
-//        }
-//
-//        if (!empty($response)) {
-//            echo $response;
-//            exit;
-//        }
-//
-//        ## if both password are not matched
-//        if (empty($_POST['school_admin_password']) || empty($_POST['school_admin_confirm_password'])) {
-//            $response = 'User password and confirm password should not be empty';
-//        } else {
-//            if ($_POST['school_admin_password'] <> $_POST['school_admin_confirm_password']) {
-//                $response = 'Password and confirm password should be same';
-//            }
-//        }
-//
-//        if (!empty($response)) {
-//            echo $response;
-//            exit;
-//        }
-//
-//        ## email check
-//        if (empty($_POST['school_admin_email_address'])) {
-//            $response = 'School admin email address is missing';
-//        }
-//
-//
-//        if (!empty($response)) {
-//            echo $response;
-//            exit;
-//        }
-//
-//        ## then register school in database.
-//
-//        //$Model = new WCP_FrontEnd_Signup_Model();
-//        $postData = [
-//            'school_name' => $_POST['school_name'],
-//            'school_address' => $_POST['school_address'],
-//            'school_city' => $_POST['school_city'],
-//            'school_state' => $_POST['school_state'],
-//            'school_zipcode' => $_POST['school_zipcode'],
-//            'school_country' => $_POST['school_coutry'],
-//            'school_phone' => $_POST['school_phone'],
-//        ];
-//
-//        ## school name is missing
-//        if (empty($postData['school_name'])) {
-//            exit ('School name is missing');
-//        }
-//
-//        ## school phone is missing.
-//        if (empty($postData['school_phone'])) {
-//            exit($returnResponse = ('School phone is missing'));
-//        }
-//
-//        ## school address
-//        if (empty($postData['school_address'])) {
-//            exit ('School address is missing');
-//        }
-//
-//        ## school city
-//        if (empty($postData['school_city'])) {
-//            exit ('School city is missing');
-//        }
-//
-//
-//        ## school state
-//        if (empty($postData['school_state'])) {
-//            exit ('School state is missing');
-//        }
-//
-//
-//        ## school zipcode
-//        if (empty($postData['school_zipcode'])) {
-//            exit ('School Zip Code is missing');
-//        }
-//
-//        ## school country
-//        if (empty($postData['school_country'])) {
-//            exit ('School country is missing');
-//        }
-//
-//        ## school phone
-//        if (empty($postData['school_phone'])) {
-//            exit ('School phone is missing');
-//        }
-//        ## create wp user first.
-//        $user_create_response = wp_create_user($wp_user_name, $_POST['school_admin_password'], $_POST['school_admin_email_address']);
-//
-//        if (is_wp_error($user_create_response)) {
-//            $response = $user_create_response->get_error_message();
-//        } else {
-//            ## user role to the school
-//            wp_update_user(array('ID' => $user_create_response, 'role' => 'wcp_school'));
-//        }
-//        if (!empty($response)) {
-//            echo $response;
-//            exit();
-//        }
-//
-//        $postData['wp_user_id'] = $user_create_response;
-//
-//        global $wpdb;
-//        $wpdb->insert('wp_wcp_schools', $postData);
-//        if (!empty($wpdb->last_error)) {
-//            echo $wpdb->last_error;
-//            exit;
-//        } else {
-//            echo 'OK';
-//            exit;
-//        }
-//
-//    }
-//}
-//
-
-## teacher registration ajax request.
-//add_action('wp_ajax_teacher_sign_up', teacher_registration_ajax_request());
-//add_action('wp_ajax_nopriv_teacher_sign_up', teacher_registration_ajax_request());
-//function teacher_registration_ajax_request()
-//{
-//    if ($_POST['action'] == 'teacher_sign_up') {
-//
-//        $response = null;
-//        $wp_user_name = null;
-//        if (!empty($_POST['teacher_first_name']) || !empty($_POST['teacher_last_name'])) {
-//            $wp_user_name = $_POST['teacher_first_name'] . $_POST['teacher_last_name'];
-//        } else {
-//            $response = 'User name is missing in account details';
-//        }
-//
-//        if (!empty($response)) {
-//            echo $response;
-//            exit;
-//        }
-//
-//        ## if both password are not matched
-//        if (empty($_POST['teacher_password']) || empty($_POST['teacher_confirm_password'])) {
-//            $response = 'User password and confirm password should not be empty';
-//        } else {
-//            if ($_POST['input_pass'] <> $_POST['input_con_pass']) {
-//                $response = 'Password and confirm password should be same';
-//            }
-//        }
-//
-//        if (!empty($response)) {
-//            echo $response;
-//            exit;
-//        }
-//
-//        ## email check
-//        if (empty($_POST['teacher_email'])) {
-//            $response = 'Teacher email address is missing';
-//        }
-//
-//        if (empty($_POST['school_ref'])) {
-//            $response = 'School not found';
-//        }
-//
-//        if (!empty($response)) {
-//            echo $response;
-//            exit;
-//        }
-//
-//
-//        ## create wp user first.
-//        $user_create_response = wp_create_user($wp_user_name, $_POST['teacher_password'], $_POST['teacher_email']);
-//        if (is_wp_error($user_create_response)) {
-//            $response = $user_create_response->get_error_message();
-//        } else {
-//            ## user role to the school
-//            wp_update_user(array('ID' => $user_create_response, 'role' => 'wcp_teacher'));
-//        }
-//        if (!empty($response)) {
-//            echo $response;
-//            exit();
-//        }
-//
-//        ## then register teacher in database.
-//        $postData = [
-//            'school_id' => $_POST['school_ref'],
-//            //            'school_state' => $_POST['school_state'],
-//            //            'school_zipcode' => $_POST['school_zipcode'],
-//            //            'school_country' => $_POST['school_coutry'],
-//            //            'school_phone' => $_POST['school_phone'],
-//            'wp_user_id' => $user_create_response,
-//        ];
-//
-//        global $wpdb;
-//        $wpdb->insert('wp_wcp_school_teacher', $postData);
-//        if (!empty($wpdb->last_error)) {
-//            echo $wpdb->last_error;
-//            exit;
-//        } else {
-//            echo 'OK';
-//            exit;
-//        }
-//
-//    }
-//}
-
-## Student registraiton
-## School registration ajax request.
-//add_action('wp_ajax_student_sign_up', student_registration_ajax_request());
-//add_action('wp_ajax_nopriv_student_sign_up', student_registration_ajax_request());
-//function student_registration_ajax_request()
-//{
-//    if ($_POST['action'] == 'student_sign_up') {
-//
-//        $response = null;
-//        $wp_user_name = null;
-//        if (!empty($_POST['student_first_name']) || !empty($_POST['student_last_name'])) {
-//            $wp_user_name = $_POST['student_first_name'] . $_POST['student_last_name'];
-//        } else {
-//            $response = 'User name is missing in account details';
-//        }
-//
-//        if (!empty($response)) {
-//            echo $response;
-//            exit;
-//        }
-//
-//        ## if both password are not matched
-//        if (empty($_POST['student_pass']) || empty($_POST['student_confr_pass'])) {
-//            $response = 'User password and confirm password should not be empty';
-//        } else {
-//            if ($_POST['student_pass'] <> $_POST['student_confr_pass']) {
-//                $response = 'Password and confirm password should be same';
-//            }
-//        }
-//
-//        if (!empty($response)) {
-//            echo $response;
-//            exit;
-//        }
-//
-//        ## email check
-//        if (empty($_POST['student_email'])) {
-//            $response = 'Teacher email address is missing';
-//        }
-//
-//        if (empty($_POST['school_ref'])) {
-//            $response = 'School not found';
-//        }
-//
-//        if (empty($_POST['teacher_ref'])) {
-//            $response = 'Teacher not found';
-//        }
-//
-//        if (!empty($response)) {
-//            echo $response;
-//            exit;
-//        }
-//
-//
-//        ## create wp user first.
-//        $user_create_response = wp_create_user($wp_user_name, $_POST['student_pass'], $_POST['student_email']);
-//        if (is_wp_error($user_create_response)) {
-//            $response = $user_create_response->get_error_message();
-//        } else {
-//            ## user role to the school
-//            wp_update_user(array('ID' => $user_create_response, 'role' => 'wcp_student'));
-//        }
-//        if (!empty($response)) {
-//            echo $response;
-//            exit();
-//        }
-//
-//        ## then register teacher in database.
-//        $postData = [
-//            'school_id' => $_POST['school_ref'],
-//            'teacher_id' => $_POST['teacher_ref'],
-//            //            'school_state' => $_POST['school_state'],
-//            //            'school_zipcode' => $_POST['school_zipcode'],
-//            //            'school_country' => $_POST['school_coutry'],
-//            //            'school_phone' => $_POST['school_phone'],
-//            'wp_user_id' => $user_create_response,
-//        ];
-//
-//        global $wpdb;
-//        $wpdb->insert('wp_wcp_school_teacher_student', $postData);
-//        if (!empty($wpdb->last_error)) {
-//            echo $wpdb->last_error;
-//            exit;
-//        } else {
-//            echo 'OK';
-//            exit;
-//        }
-//
-//    }
-//}
-
 
 function admin_default_page($redirect_to, $request, $user)
 {
@@ -586,6 +274,10 @@ function admin_default_page($redirect_to, $request, $user)
         } else if (in_array('wcp_student', $user->roles)) {
             $redirectionPage = '/student-dashboard/';
         }
+        
+        //Redirect to BP Dashboard
+        $redirectionPage = '/members/me/dashboard/';
+
         return home_url($redirectionPage);
     }
 }
@@ -593,22 +285,28 @@ function admin_default_page($redirect_to, $request, $user)
 add_filter('login_redirect', 'admin_default_page', 1000000000, 3);
 
 
-//add_action('wp_login', afterLoginRedirectToPageAccordingToRole());
+// Change Register link Top menu
+add_filter('wplms_buddypress_registration_link', function($url){
+    return site_url("signup-now");
+}, 1 );
 
-//add_filter('login_redirect', function () {
-//    $current_user = wp_get_current_user();
-//    $redirectionPage = null;
-//    if (in_array('wcp_school', (array)$current_user->roles)) {
-//        $redirectionPage = 'school-dashboard/';
-//    } else if (in_array('wcp_teacher', (array)$current_user->roles)) {
-//        $redirectionPage = 'teacher-dashboard/';
-//    } else if (in_array('wcp_student', (array)$current_user->roles)) {
-//        $redirectionPage = 'student-dashboard/';
-//    }
-//
-//
-//    if (!empty($redirectionPage)) {
-//        wp_redirect(get_site_url() . '/' . $redirectionPage);
-//    }
-//
-//}, 100);
+// Update dashboard Page according to User role
+
+add_action("bp_before_dashboard_body" ,  "wcp_dashboard_content");
+function wcp_dashboard_content(){
+    $user = wp_get_current_user();
+    if (in_array('wcp_school', $user->roles) || in_array('wcp_school', $user->roles) || in_array('wcp_teacher', $user->roles) || in_array('wcp_student', $user->roles) || in_array('wcp_student', $user->roles) ) {
+        echo "<div class='col-sm-12'>";
+        echo '<div class="dash-widget">';
+        
+        if (in_array('wcp_school', $user->roles)) {
+            echo do_shortcode("[wcp_school_admin__dashbaord]");
+        } else if (in_array('wcp_teacher', $user->roles)) {
+            //echo do_shortcode("[wcp_teacher__dashbaord]");
+        } else if (in_array('wcp_student', $user->roles) || in_array('student', $user->roles)) {
+            echo do_shortcode("[wcp_student__dashbaord]");
+        }
+        echo "</div>";
+        echo "</div>";
+    }
+}

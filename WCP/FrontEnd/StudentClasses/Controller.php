@@ -1,5 +1,5 @@
 <?php
-include_once(dirname(__FILE__) . "/WCPFrontEndStudentClassModel.php");
+include_once(dirname(__FILE__) . "/Model.php");
 include(ABSPATH . "wp-includes/pluggable.php");
 
 class WCP_FrontEnd_StudentClass_Controller
@@ -7,10 +7,11 @@ class WCP_FrontEnd_StudentClass_Controller
 
     public function __construct()
     {
-        ## make class room view
-        add_shortcode('wcp_make_classRoom', array($this, 'render_wcp_makeClassRoom_form'));
         ## class room list
-        add_shortcode('wcp_classRoom_list', array($this, 'render_wcp_classRoomList'));
+        add_shortcode('wcp_classes_list', array($this, 'render_wcp_classes_list'));
+        ## make class room view
+        add_shortcode('wcp_add_class_form', array($this, 'render_wcp_add_class_form'));
+        
         ## assign class students to class room
         add_shortcode('wcp_assign_to_classRoom', array($this, 'render_wcp_assign_studentClassRoom'));
         ## details of class room, which contains class room details and class enrolment
@@ -71,27 +72,28 @@ class WCP_FrontEnd_StudentClass_Controller
     ## Css and js file for this module
     public function add_front_css_and_js_extended()
     {
+         wp_enqueue_script('wcp-common');
         wp_enqueue_script('wcp-classes-custom-js', WCP_PLUGIN_URL . '/WCP/FrontEnd/StudentClasses/js/classes.js', false, time());
     }
 
     ## Make Class room
-    public function render_wcp_makeClassRoom_form()
+    public function render_wcp_add_class_form()
     {
 
         $this->add_front_css_and_js_extended();
         ob_start();
-        include_once dirname(__FILE__) . "/View/classRoom.php";
+        include_once dirname(__FILE__) . "/View/class-form.php";
         $content = ob_get_clean();
         return $content;
     }
 
     ## Class list
-    public function render_wcp_classRoomList()
+    public function render_wcp_classes_list()
     {
         $this->add_front_css_and_js_extended();
 
         ob_start();
-        include_once dirname(__FILE__) . "/View/classRoomList.php";
+        include_once dirname(__FILE__) . "/View/classes-list.php";
         $content = ob_get_clean();
         return $content;
     }
@@ -116,10 +118,3 @@ if (class_exists("WCP_FrontEnd_StudentClass_Controller")) {
     $WCP_FrontEnd_Signup_Controller->add_front_css_and_js();
 
 }
-
-?>
-
-
-
-
-

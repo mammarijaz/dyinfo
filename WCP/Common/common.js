@@ -10,11 +10,18 @@ function inputManager(disable) {
     }
 }
 
-function scrollToTop (){
-    // scroll top of the page
-    jQuery('html,body').animate({
-        scrollTop: $('html').offset().top
-    }, 1000);
+function scrollToTop (target = false, morepad = 40){
+    if(target){
+        targetTop = $(target);
+    }else{
+        targetTop =  $('html');
+    }
+    if(targetTop.length){
+        // scroll top of the page
+        jQuery('html,body').animate({
+            scrollTop:targetTop.offset().top - morepad
+        }, 1000);
+    }
 }
 
 function showLoading(fromRef, textToDisplay = 'Loading, please wait') {

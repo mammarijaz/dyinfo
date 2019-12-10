@@ -17,14 +17,9 @@ if (!empty($current_user->id) && in_array('wcp_teacher', (array)$current_user->r
 
     ?>
 
-    <a target="_blank" href="<?php echo home_url('/make-class-room/') ?>"> Make Class room </a>
-    <a target="_blank" href="<?php echo home_url('/make-class-room/') ?>"> Assign student to class room </a>
+    <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#addClassModal">Add New</a>
 
     <p id="err_msg"></p>
-
-    <!-- LIST OF TEACHER -->
-    <h3>Class Room List</h3>
-    <hr>
     <span id="remoteResource" action="<?php echo admin_url('admin-ajax.php'); ?>"></span>
     <table id="teacher___table">
         <thead>
@@ -108,6 +103,20 @@ if (!empty($current_user->id) && in_array('wcp_teacher', (array)$current_user->r
     </table>
 
 
+<div class="modal fade" id="addClassModal" role="dialog" style="overflow-y: auto;">
+    <div class="modal-dialog">
+      <!-- Modal content-->
+      <div class="modal-content">
+          <div class="modal-header"><h4 class="modal-title">Invite Student</h4><button type="button" class="close" data-dismiss="modal">&times;</button>
+          </div>
+         <div class="modal-body">
+            <?php echo do_shortcode("[wcp_add_class_form]"); ?>
+        
+          </div>
+      </div>
+    </div>
+</div>
+<!-- Close Model Popup -->
 <?php } else { ?>
     <h1> You'r not allowed to view this page</h1>
 <?php } ?>

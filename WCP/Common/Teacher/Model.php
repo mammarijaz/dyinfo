@@ -337,8 +337,13 @@ class WCP_Common_Teacher_Model
         $response = $this->teacher_invitation_validation($validation);
 
         if ($response) {
-            $body = get_site_url() . '/' . 'teacher-registration/' . '?query=' . $_REQUEST['school_reference'] . '&ref=' . $_REQUEST['teacher_email'];
-            return wcp_send_mail($_POST['teacher_email'], 'School Invite', $body);
+            $body = get_site_url() . '/' . 'signup-now/' . '?query=' . $_REQUEST['school_reference'] . '&user_type=teacher&user_email='.$_REQUEST['teacher_email'];
+            //$body = get_site_url() . '/' . 'teacher-registration/' . '?query=' . $_REQUEST['school_reference'] . '&ref=' . $_REQUEST['teacher_email'];
+             $sent = wcp_send_mail($_POST['teacher_email'], 'School Invite', $body);
+             if(email_exists($_REQUEST['teacher_email'])) {
+                return "userExists";
+             }
+             return "Sent";
         } else {
             return 'Missing Arguments';
         }

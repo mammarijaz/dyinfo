@@ -8,12 +8,6 @@ class WCP_FrontEnd_Signup_Controller
     {
         add_shortcode('wcp_signup_form', array($this, 'render_wcp_signup_form'));
 
-        /**
-         * @Deprecated - 30-Oct-2019
-         */
-        add_shortcode('wcp_signup_form_teacher', array($this, 'render_wcp_signup_form_teacher'));
-        add_shortcode('wcp_signup_form_student', array($this, 'render_wcp_signup_form_student'));
-
         ## Signup ajax request.
         add_action('wp_ajax_wcp_signup', array($this, 'wcp_do_signup'));
         add_action('wp_ajax_nopriv_wcp_signup', array($this, 'wcp_do_signup'));
@@ -21,25 +15,17 @@ class WCP_FrontEnd_Signup_Controller
 
     public function add_front_css_and_js()
     {
+        wp_enqueue_style('wcp-datatable-css');
 
-
-//        wp_deregister_script('jquery');
-//        wp_register_script('jquery', 'http://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js', false, '1.11.3');
-//        wp_enqueue_script('jquery');
-
-
-        wp_enqueue_script('wcp-signup-common-js', WCP_PLUGIN_URL . '/WCP/Common/common.js');
-        wp_enqueue_style('wcp-datatable-css', 'https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css');
-        wp_enqueue_script('wcp-signup-custom-js', WCP_PLUGIN_URL . '/WCP/FrontEnd/Signup/js/wcp_signup_script.js');
-        wp_enqueue_script('wcp-signup-ajaxSubmitPlugin', 'https://malsup.github.com/jquery.form.js');
-        wp_enqueue_script('wcp-datatable-js', 'https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js');
-
-
+        wp_enqueue_script('wcp-common');
+        wp_enqueue_script('wcp-datatable-js');
+        wp_enqueue_script('wcp-signup-custom-js', WCP_PLUGIN_URL . '/WCP/FrontEnd/Signup/js/wcp-signup.js');
     }
 
     public function wcp_do_signup()
     {
-        // print_r($_REQUEST);
+       
+
         global $WCP_Common_School_Model, $WCP_Common_Teacher_Model, $WCP_Common_Student_Model;
         $valid_post_fields = array('input_first_name', 'input_email', 'input_pass');
 
@@ -94,11 +80,13 @@ class WCP_FrontEnd_Signup_Controller
                 if ($new_user_id) {
 
                     //Do Login
-                    wp_set_current_user($new_user_id, $email);
+                    $this->auto_login_new_user($new_user_id);
+                    /*wp_set_current_user($new_user_id, $email);
                     wp_set_auth_cookie($new_user_id);
-                    do_action('wp_login', $email);
+                    do_action('wp_login', $email);*/
 
-                    $url = site_url() . "/school-dashboard";
+                    //$url = site_url() . "/school-dashboard";
+                    $url = site_url() . '/members/me/dashboard/';
                     $user = get_userdata($new_user_id);
 
                     $response = array('status' => 'ok', 'msg' => 'Registered successfully. Please wait...', 'url' => $url);
@@ -119,13 +107,13 @@ class WCP_FrontEnd_Signup_Controller
                             $response["teacherres"] = $teacher;
                             $user->set_role('wcp_teacher');
                             $user->remove_role('student');
-                            $response['url'] = site_url() . '/teacher-dashboard';
+                            //$response['url'] = site_url() . '/teacher-dashboard';
                         }
 
                         if ($user_type == "wcp_student") {
                             $student = $WCP_Common_Student_Model->wcp_add_student($formdata);
                             $response["studentres"] = $student;
-                            $response['url'] = site_url() . '/student-dashboard';
+                            //$response['url'] = site_url() . '/student-dashboard';
                             $user->set_role('wcp_student');
                         }
                     }
@@ -148,7 +136,14 @@ class WCP_FrontEnd_Signup_Controller
 
     }
 
-    private function is_valid_post_request($valid_post_fields)
+    private function auto_login_new_user( $user_id ) {
+        wp_set_current_user($user_id);
+        wp_set_auth_cookie($user_id);
+        //$user = get_user_by( 'id', $user_id );
+        //do_action( 'wp_login', $user->user_login );
+    }
+
+    public function is_valid_post_request($valid_post_fields)
     {
 
 

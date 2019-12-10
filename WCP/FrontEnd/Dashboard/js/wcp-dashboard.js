@@ -1,7 +1,7 @@
 jQuery(document).ready(function ($) {
 
-    var err_msg = $('#err_msg');
-    $('#teacher___table, #school___table, #teacher___table_, #my___table').dataTable();
+    var err_msg = jQuery('#err_msg');
+    jQuery('#teacher___table, #school___table, #teacher___table_, #my___table').dataTable();
 
     /**
      * Invitation Codes
@@ -21,26 +21,24 @@ jQuery(document).ready(function ($) {
      * Teacher Invitation
      * */
     function sendInvitationToUsers() {
-        let emailInput = $('input[name=teacher_email]').val();
+        let emailInput = jQuery('input[name=teacher_email]').val();
         var object = [
             emailInput,
         ];
         var invitaitonValidation = is_valid_request(object);
         if (invitaitonValidation) {
             showLoading('teacher_invitation');
-            $.ajax({
+            jQuery.ajax({
                 method: 'post',
-                data: $('#teacher_invitation').serialize(),
+                data: jQuery('#teacher_invitation').serialize(),
                 url: ajaxurl,
                 success: function (message) {
-                    console.log(message);
                     var resposne = JSON.parse(message);
-                    if (resposne === 'OK') {
+                    err_msg.html(resposne.msg);
+                    if (resposne.status === true) {
                         err_msg.css('color', 'green');
-                        err_msg.html('Email has been sent to the user');
-                        $('#teacher_invitation')[0].reset();
+                        jQuery('#teacher_invitation')[0].reset();
                     } else {
-                        err_msg.html(resposne);
                         err_msg.css('color', 'red');
                     }
                     showLoading('teacher_invitation', 'Send invitation to teacher');
@@ -50,13 +48,13 @@ jQuery(document).ready(function ($) {
                     err_msg.css('color', 'red');
                     console.log(err);
                     console.log('ajax is returning an err');
-                    showLoading('teacher_invitation', 'Send invitation to teacher');
+                    showLoading('teacher_invitation', 'Send invitation to teacher.');
 
 
                     // temp
                     err_msg.css('color', 'green');
                     err_msg.html('Email has been sent to the user');
-                    $('#teacher_invitation')[0].reset();
+                    jQuery('#teacher_invitation')[0].reset();
 
 
                 },
@@ -67,7 +65,7 @@ jQuery(document).ready(function ($) {
         }
     }
 
-    $(document).on('submit', 'form#teacher_invitation, form#school_invitation', function (e) {
+    jQuery(document).on('submit', 'form#teacher_invitation, form#school_invitation', function (e) {
         e.preventDefault();
         sendInvitationToUsers();
     });
@@ -76,57 +74,58 @@ jQuery(document).ready(function ($) {
      * Student Invitation
      * */
     function sendInvitationToStudent() {
-        let emailInput = $('input[name=student_email]').val();
-        let schoolRef = $('input[name=school_reference]').val();
-        let teacherRef = $('input[name=teacher_reference]').val();
+        var formResponse = jQuery('#student_invitation').find(".form-response");
+        formResponse.addClass("hidden");
+        let emailInput = jQuery('input[name=student_email]').val();
+        let schoolRef = jQuery('input[name=school_reference]').val();
+        let teacherRef = jQuery('input[name=teacher_reference]').val();
         var object = [
             emailInput,
             schoolRef,
             teacherRef,
         ];
         var invitaitonValidation = is_valid_request(object);
-
         if (invitaitonValidation) {
-            showLoading('school_invitation');
-            $.ajax({
+            showLoading('student_invitation');
+            
+            jQuery.ajax({
                 method: 'post',
-                data: $('#school_invitation').serialize(),
+                data: jQuery('#student_invitation').serialize(),
                 url: ajaxurl,
                 success: function (message) {
-                    console.log(message);
                     var resposne = JSON.parse(message);
-                    if (resposne === 'OK') {
-                        err_msg.css('color', 'green');
-                        err_msg.html('Email has been sent to the user');
-                        $('#school_invitation')[0].reset();
+                    formResponse.html(resposne.msg);
+                    formResponse.removeClass("hidden");
+                    if (resposne.status === true) {
+                        jQuery('#student_invitation')[0].reset();
+                        formResponse.removeClass('alert-danger').addClass("alert-success");
                     } else {
-                        err_msg.html(resposne);
-                        err_msg.css('color', 'red');
+                        formResponse.html(resposne.msg);
+                        formResponse.addClass('alert-danger').removeClass('alert-success');
                     }
-                    showLoading('school_invitation', 'Send invitation to Student');
+                    showLoading('student_invitation', 'Send invitation to Student');
                 },
                 error: function (err) {
-                    err_msg.html(err.responseText);
-                    err_msg.css('color', 'red');
-                    console.log(err);
-                    showLoading('school_invitation', 'Send invitation to Student');
-
+                    formResponse.removeClass("hidden");
+                    formResponse.html(err.responseText);
+                    formResponse.css('color', 'red');
+                    showLoading('student_invitation', 'Send invitation to Student');
 
                     // temp
-
-                    err_msg.css('color', 'green');
-                    err_msg.html('Email has been sent to the user');
-                    $('#school_invitation')[0].reset();
+                    formResponse.addClass('alert-danger').removeClass('alert-success');
+                    formResponse.html('Email has been sent to the user');
+                    jQuery('#student_invitation')[0].reset();
                 },
             });
         } else {
-            err_msg.html('Please fill out the require fields');
-            err_msg.css('color', 'red');
+            formResponse.removeClass("hidden");
+            formResponse.html('Please fill out the require fields');
+            formResponse.addClass('alert-danger').removeClass('alert-success');
         }
         scrollToTop();
     }
 
-    $(document).on('submit', 'form#school_invitation', function (e) {
+    jQuery(document).on('submit', 'form#student_invitation', function (e) {
         e.preventDefault();
         sendInvitationToStudent();
     });
@@ -137,21 +136,21 @@ jQuery(document).ready(function ($) {
      * */
 
     // edit teacher - show the modal
-    $(document).on('click', '.edit-teacher', function (e) {
+    jQuery(document).on('click', '.edit-teacher', function (e) {
         e.preventDefault();
 
-        var teacherRef = $(this).attr('data-attr');
+        var teacherRef = jQuery(this).attr('data-attr');
         var object = {
             edit_id: 'edit_id_',
             full_name: 'full_name_',
         };
 
         for (var x in object) {
-            //var value = $('td#' + object[x]).html().trim();
-            var value = $('td#' + object[x] + teacherRef).html();
-            $('input[name=' + [x] + ']').val(value);
+            //var value = jQuery('td#' + object[x]).html().trim();
+            var value = jQuery('td#' + object[x] + teacherRef).html();
+            jQuery('input[name=' + [x] + ']').val(value);
         }
-        $('#myModal').modal('show');
+        jQuery('#myModal').modal('show');
     });
 
     /**
@@ -159,8 +158,8 @@ jQuery(document).ready(function ($) {
      * */
     // update the teacher in database
     function updateTeacher() {
-        let teacherFullName = $('input[name=full_name]').val();
-        let teacherEditID = $('input[name=edit_id]').val();
+        let teacherFullName = jQuery('input[name=full_name]').val();
+        let teacherEditID = jQuery('input[name=edit_id]').val();
         var object = [
             teacherFullName,
             teacherEditID,
@@ -169,9 +168,9 @@ jQuery(document).ready(function ($) {
         if (invitaitonValidation) {
             showLoading('teacher_update_form');
 
-            $.ajax({
+            jQuery.ajax({
                 method: 'post',
-                data: $('#teacher_update_form').serialize(),
+                data: jQuery('#teacher_update_form').serialize(),
                 url: ajaxurl,
                 success: function (message) {
                     console.log(message);
@@ -180,8 +179,8 @@ jQuery(document).ready(function ($) {
                     if (resposne === 'OK') {
                         err_msg.css('color', 'green');
                         err_msg.html('Teacher has been updated');
-                        $('#teacher_update_form')[0].reset();
-                        $('#myModal').modal('hide');
+                        jQuery('#teacher_update_form')[0].reset();
+                        jQuery('#myModal').modal('hide');
                         window.location.reload();
                     } else {
                         console.log(message);
@@ -203,7 +202,7 @@ jQuery(document).ready(function ($) {
 
                     err_msg.css('color', 'green');
                     err_msg.html('Email has been sent to the user');
-                    $('#school_invitation')[0].reset();
+                    jQuery('#school_invitation')[0].reset();
 
                 },
             });
@@ -215,7 +214,7 @@ jQuery(document).ready(function ($) {
         scrollToTop();
     }
 
-    $(document).on('click', '.update-teacher_buton', function (e) {
+    jQuery(document).on('click', '.update-teacher_buton', function (e) {
         e.preventDefault();
         updateTeacher();
     });
@@ -225,10 +224,10 @@ jQuery(document).ready(function ($) {
      * */
     // update the teacher in database
     function updateStudent() {
-        let teacherFullName = $('input[name=full_name]').val();
-        let teacherEditID = $('input[name=edit_id]').val();
-        let action = $('input[name=action]').val();
-        let target = $('input[name=target]').val();
+        let teacherFullName = jQuery('input[name=full_name]').val();
+        let teacherEditID = jQuery('input[name=edit_id]').val();
+        let action = jQuery('input[name=action]').val();
+        let target = jQuery('input[name=target]').val();
         var object = [
             teacherFullName,
             teacherEditID,
@@ -240,9 +239,9 @@ jQuery(document).ready(function ($) {
             showLoading('student_update_form');
 
 
-            $.ajax({
+            jQuery.ajax({
                 method: 'post',
-                data: $('#student_update_form').serialize(),
+                data: jQuery('#student_update_form').serialize(),
                 url: ajaxurl,
                 success: function (message) {
                     console.log(message);
@@ -250,8 +249,8 @@ jQuery(document).ready(function ($) {
                     if (resposne === 'OK') {
                         err_msg.css('color', 'green');
                         err_msg.html('Teacher has been updated');
-                        $('#student_update_form')[0].reset();
-                        $('#myModal').modal('hide');
+                        jQuery('#student_update_form')[0].reset();
+                        jQuery('#myModal').modal('hide');
                         window.location.reload();
                     } else {
                         console.log(message);
@@ -269,8 +268,8 @@ jQuery(document).ready(function ($) {
                     // temp
                     err_msg.css('color', 'green');
                     err_msg.html('Teacher has been updated');
-                    $('#student_update_form')[0].reset();
-                    $('#myModal').modal('hide');
+                    jQuery('#student_update_form')[0].reset();
+                    jQuery('#myModal').modal('hide');
                     window.location.reload();
                 },
             });
@@ -282,7 +281,7 @@ jQuery(document).ready(function ($) {
         scrollToTop();
     }
 
-    $(document).on('click', '.update-student_button', function (e) {
+    jQuery(document).on('click', '.update-student_button', function (e) {
         e.preventDefault();
         updateStudent();
     });
@@ -296,7 +295,7 @@ jQuery(document).ready(function ($) {
         if (teacherRef == '' || typeof teacherRef === 'undefined') {
             return err_msg.css('red', 'Invalid teacher');
         } else {
-            $.ajax({
+            jQuery.ajax({
                 method: 'post',
                 data: {
                     id: teacherRef,
@@ -306,8 +305,8 @@ jQuery(document).ready(function ($) {
                 url: ajaxurl,
                 success: function (message) {
                     if (message == 'success') {
-                        $('#teacher_' + teacherRef).css('background-color', 'red');
-                        $('#teacher_action__' + teacherRef).html('This user has been deleted');
+                        jQuery('#teacher_' + teacherRef).css('background-color', 'red');
+                        jQuery('#teacher_action__' + teacherRef).html('This user has been deleted');
                     } else {
                         err_msg.css('color', 'red');
                         err_msg.html('Please contact admin to delete the teacher');
@@ -322,8 +321,8 @@ jQuery(document).ready(function ($) {
 
 
                     // temp
-                    $('#teacher_' + teacherRef).css('background-color', 'red');
-                    $('#teacher_action__' + teacherRef).html('This user has been deleted');;
+                    jQuery('#teacher_' + teacherRef).css('background-color', 'red');
+                    jQuery('#teacher_action__' + teacherRef).html('This user has been deleted');;
 
 
                 }
@@ -331,9 +330,9 @@ jQuery(document).ready(function ($) {
         }
     }
 
-    $(document).on('click', '.deleteTeacher', function (e) {
+    jQuery(document).on('click', '.deleteTeacher', function (e) {
         e.preventDefault();
-        var teacherRef = $(this).attr('data-attr');
+        var teacherRef = jQuery(this).attr('data-attr');
         deleteTeacher(teacherRef);
     });
 
@@ -344,7 +343,7 @@ jQuery(document).ready(function ($) {
         if (studentRef == '' || typeof studentRef === 'undefined') {
             return err_msg.css('red', 'Invalid teacher');
         } else {
-            $.ajax({
+            jQuery.ajax({
                 method: 'post',
                 data: {
                     id: studentRef,
@@ -355,8 +354,8 @@ jQuery(document).ready(function ($) {
                 success: function (message) {
                     message = JSON.parse(message);
                     if (message == 'success') {
-                        $('#teacher_' + studentRef).css('background-color', 'red');
-                        $('#teacher_action__' + studentRef).html('This user has been deleted');
+                        jQuery('#teacher_' + studentRef).css('background-color', 'red');
+                        jQuery('#teacher_action__' + studentRef).html('This user has been deleted');
                     } else {
                         err_msg.css('color', 'red');
                         err_msg.html('Please contact admin to delete the teacher');
@@ -370,8 +369,8 @@ jQuery(document).ready(function ($) {
 
                     // temp
 
-                    $('#teacher_' + studentRef).css('background-color', 'red');
-                    $('#teacher_action__' + studentRef).html('This user has been deleted');
+                    jQuery('#teacher_' + studentRef).css('background-color', 'red');
+                    jQuery('#teacher_action__' + studentRef).html('This user has been deleted');
 
                 }
             });
@@ -380,9 +379,9 @@ jQuery(document).ready(function ($) {
         scrollToTop();
     }
 
-    $(document).on('click', '.deleteStudent', function (e) {
+    jQuery(document).on('click', '.deleteStudent', function (e) {
         e.preventDefault();
-        var studentRef = $(this).attr('data-attr');
+        var studentRef = jQuery(this).attr('data-attr');
         deleteStudent(studentRef);
     });
 

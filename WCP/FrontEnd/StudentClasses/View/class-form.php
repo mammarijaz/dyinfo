@@ -16,19 +16,8 @@ if (!empty($current_user->id) && in_array('wcp_teacher', (array)$current_user->r
         $classRoom = $WCPFrontEndStudentClassModel->getClassRoomByID(base64_decode($_GET['ref']));
     }
 
-
     if (!empty($teacherFromTeacherTable->id)) {
-
         ?>
-        <p id="err_msg"></p>
-
-        <!-- Make Class Room -->
-        <h3>Make Class room</h3>
-        <hr>
-
-        <a target="_blank" href="<?php echo home_url('/list-of-class-rooms/') ?>"> Class room list </a>
-
-
         <div id="registerBox" class="wcp-form-box">
             <form method="POST" name="wcp_form_signup" id="makeClassRoom" enctype="multipart/form-data"
                   class="form-signin" action="<?php echo admin_url('admin-ajax.php'); ?>">

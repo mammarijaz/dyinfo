@@ -50,6 +50,7 @@ jQuery(document).ready(function ($) {
                 var formData = $('form#wcp_form_signup').serialize();
                 // after getting data from input disable now
                 inputManager(true);
+                
                 $.ajax({
                     url: ajaxurl,
                     //url: ajax_url,
@@ -88,7 +89,7 @@ jQuery(document).ready(function ($) {
             err_msg.html('All fields are required.');
         }
 
-        scrollToTop();
+        scrollToTop("#wcp_form_signup");
 
 
     });

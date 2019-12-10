@@ -1,16 +1,16 @@
 <?php
 
-class WCP_Common_Student_Model
+class WCP_Common_Class_Model
 {
 
     public function __construct()
     {
 
-        $table_name = 'wcp_students';
+        $table_name = 'wcp_class_room';
         $this->table_name = $table_name;
     }
 
-    public function wcp_add_student($postData)
+    public function wcp_add_class($postData)
     {
         global $wpdb;
         $table_name = $this->table_name;
@@ -21,10 +21,10 @@ class WCP_Common_Student_Model
         $response['error'] = 0;
         $response['errors'] = array();
         $response['message'] = "";
-        if (!isset($postData['full_name']) || trim($postData['full_name']) == "") {
+        if (!isset($postData['class_room_name']) || trim($postData['class_room_name']) == "") {
             $error = array(
-                "key" => "full_name",
-                "message" => sprintf($errorMessage, __("Student Name", "wcp"))
+                "key" => "class_room_name",
+                "message" => sprintf($errorMessage, __("Class Name", "wcp"))
             );
             // $errorArray[] = $error;
         }
@@ -35,20 +35,26 @@ class WCP_Common_Student_Model
             $response['errors'] = $errorArray;
         } else {
 
-            $full_name = isset($postData["full_name"]) ? esc_sql($postData["full_name"]) : "";
-            $wp_user_id = isset($postData["wp_user_id"]) ? esc_sql($postData["wp_user_id"]) : 0;
+            $class_room_name = isset($postData["class_room_name"]) ? esc_sql($postData["class_room_name"]) : "";
+            $class_room_descrption = isset($postData["class_room_descrption"]) ? esc_sql($postData["class_room_descrption"]) : "";
             $school_id = isset($postData["school_id"]) ? esc_sql($postData["school_id"]) : 0;
             $teacher_id = isset($postData["teacher_id"]) ? esc_sql($postData["teacher_id"]) : 0;
+
+            $class_start_date =  date('Y-m-d', strtotime($postData['class_start_date']));
+            $class_end_date =  date('Y-m-d', strtotime($postData['class_end_date']));
+
             $createddate = current_time("Y-m-d H:i:s");
             $updateddate = current_time("Y-m-d H:i:s");
 
             $wpdb->insert(
                 $table_name,
                 array(
-                    'full_name' => $full_name,
+                    'class_room_name' => $class_room_name,
                     'school_id' => $school_id,
                     'teacher_id' => $teacher_id,
-                    'wp_user_id' => $wp_user_id,
+                    'class_start_date' => $class_start_date,
+                    'class_end_date' => $class_end_date,
+                    'class_room_descrption' => $class_room_descrption,
                     'created_date' => $createddate,
                     'updated_date' => $updateddate
                 )
@@ -82,7 +88,7 @@ class WCP_Common_Student_Model
         return $response;
     }
 
-    public function wcp_edit_student($postData)
+    public function wcp_edit_class($postData)
     {
         global $wpdb;
         $table_name = $this->table_name;
@@ -93,10 +99,10 @@ class WCP_Common_Student_Model
         $response['error'] = 0;
         $response['errors'] = array();
         $response['message'] = "";
-        if (!isset($postData['input_first_name']) || trim($postData['input_first_name']) == "") {
+        if (!isset($postData['class_room_name']) || trim($postData['class_room_name']) == "") {
             $error = array(
-                "key" => "input_first_name",
-                "message" => sprintf($errorMessage, __("Student Name", "wcp"))
+                "key" => "class_room_name",
+                "message" => sprintf($errorMessage, __("Class Name", "wcp"))
             );
             $errorArray[] = $error;
         }
@@ -109,27 +115,97 @@ class WCP_Common_Student_Model
             $dataToUpdate = [];
             $edit_id = isset($postData["edit_id"]) ? $postData["edit_id"] : "";
 
-            $full_name = isset($postData["full_name"]) ? esc_sql($postData["full_name"]) : "";
-            
+            $class_room_name = isset($postData["class_room_name"]) ? esc_sql($postData["class_room_name"]) : "";
+            $dataToUpdate['class_room_name'] = $class_room_name;
 
-            $first_name = $postData['input_first_name'];
-            $last_name = isset($postData["input_last_name"]) ? $postData["input_last_name"] : "";
-            $full_name = $first_name . " " . $last_name;
-            $full_name = trim($full_name);
-
-            $dataToUpdate['full_name'] = $full_name;
-
-            if (!empty($postData["wp_user_id"])) {
-                $wp_user_id = esc_sql($postData["wp_user_id"]);
-                $dataToUpdate['wp_user_id'] = $wp_user_id;
+            if (!empty($postData["school_id"])) {
+                $school_id = esc_sql($postData["school_id"]);
+                $dataToUpdate['school_id'] = $school_id;
             }
 
             if (!empty($postData['teacher_id'])) {
                 $dataToUpdate['teacher_id'] = esc_sql($postData["teacher_id"]);
             }
 
-            if (!empty($postData['school_id'])) {
-                $dataToUpdate['school_id'] = esc_sql($postData["school_id"]);
+            if (!empty($postData['class_room_purpose'])) {
+                $dataToUpdate['class_room_purpose'] = esc_sql($postData["class_room_purpose"]);
+            }
+            if (!empty($postData['class_room_descrption'])) {
+                $dataToUpdate['class_room_descrption'] = esc_sql($postData["class_room_descrption"]);
+            }
+            if (!empty($postData['class_in_a_week'])) {
+                $dataToUpdate['class_in_a_week'] = esc_sql($postData["class_in_a_week"]);
+            }
+            if (!empty($postData['class_duration'])) {
+                $dataToUpdate['class_duration'] = esc_sql($postData["class_duration"]);
+            }
+            if (!empty($postData['class_sun_start_time'])) {
+                $class_sun_start_time =  date('H:i:s', strtotime($postData['class_sun_start_time']));
+                $dataToUpdate['class_sun_start_time'] = esc_sql($class_sun_start_time);
+            }
+            if (!empty($postData['class_sun_end_time'])) {
+                $class_sun_end_time =  date('H:i:s', strtotime($postData['class_sun_end_time']));
+                $dataToUpdate['class_sun_end_time'] = esc_sql($class_sun_end_time);
+            }
+            if (!empty($postData['class_mon_start_time'])) {
+                $class_mon_start_time =  date('H:i:s', strtotime($postData['class_mon_start_time']));
+                $dataToUpdate['class_mon_start_time'] = esc_sql($class_mon_start_time);
+            }
+            if (!empty($postData['class_mon_end_time'])) {
+                $class_mon_end_time =  date('H:i:s', strtotime($postData['class_mon_end_time']));
+                $dataToUpdate['class_mon_end_time'] = esc_sql($class_mon_end_time);
+            }
+            if (!empty($postData['class_tue_start_time'])) {
+                $class_tue_start_time =  date('H:i:s', strtotime($postData['class_tue_start_time']));
+                $dataToUpdate['class_tue_start_time'] = esc_sql($class_tue_start_time);
+            }
+            if (!empty($postData['class_tue_end_time'])) {
+                $class_tue_end_time =  date('H:i:s', strtotime($postData['class_tue_end_time']));
+                $dataToUpdate['class_tue_end_time'] = esc_sql($class_tue_end_time);
+            }
+            if (!empty($postData['class_wed_start_time'])) {
+                $class_wed_start_time =  date('H:i:s', strtotime($postData['class_wed_start_time']));
+                $dataToUpdate['class_wed_start_time'] = esc_sql($class_wed_start_time);
+            }
+            if (!empty($postData['class_wed_end_time'])) {
+                $class_wed_end_time =  date('H:i:s', strtotime($postData['class_wed_end_time']));
+                $dataToUpdate['class_wed_end_time'] = esc_sql($class_wed_end_time);
+            }
+            if (!empty($postData['class_thu_start_time'])) {
+                $class_thu_start_time =  date('H:i:s', strtotime($postData['class_thu_start_time']));
+                $dataToUpdate['class_thu_start_time'] = esc_sql($class_thu_start_time);
+            }
+            if (!empty($postData['class_thu_end_time'])) {
+                $class_thu_end_time =  date('H:i:s', strtotime($postData['class_thu_end_time']));
+                $dataToUpdate['class_thu_end_time'] = esc_sql($class_thu_end_time);
+            }
+            if (!empty($postData['class_fri_start_time'])) {
+                $class_fri_start_time =  date('H:i:s', strtotime($postData['class_fri_start_time']));
+                $dataToUpdate['class_fri_start_time'] = esc_sql($class_fri_start_time);
+            }
+            if (!empty($postData['class_fri_end_time'])) {
+                $class_fri_end_time =  date('H:i:s', strtotime($postData['class_fri_end_time']));
+                $dataToUpdate['class_fri_end_time'] = esc_sql($class_fri_end_time);
+            }
+            if (!empty($postData['class_sat_start_time'])) {
+                $class_sat_start_time =  date('H:i:s', strtotime($postData['class_sat_start_time']));
+                $dataToUpdate['class_sat_start_time'] = esc_sql($class_sat_start_time);
+            }
+            if (!empty($postData['class_sat_end_time'])) {
+                $class_sat_end_time =  date('H:i:s', strtotime($postData['class_sat_end_time']));
+                $dataToUpdate['class_sat_end_time'] = esc_sql($class_sat_end_time);
+            }
+            if (!empty($postData['class_room_descrption'])) {
+
+                $dataToUpdate['class_room_descrption'] = esc_sql($postData["class_room_descrption"]);
+            }
+            if (!empty($postData['class_start_date'])) {
+                $class_start_date =  date('Y-m-d', strtotime($postData['class_start_date']));
+                $dataToUpdate['class_start_date'] = esc_sql($class_start_date);
+            }
+            if (!empty($postData['class_end_date'])) {
+                $class_end_date =  date('Y-m-d', strtotime($postData['class_end_date']));
+                $dataToUpdate['class_end_date'] = esc_sql($class_end_date);
             }
 
             $updateddate = current_time("Y-m-d H:i:s");
@@ -169,7 +245,7 @@ class WCP_Common_Student_Model
     }
 
 
-    public function get_students($requestData)
+    public function get_classes($requestData)
     {
 
         global $wpdb, $wp;
@@ -206,17 +282,23 @@ class WCP_Common_Student_Model
         foreach ($service_price_list as $row) {
             $id = $row->id;
             $temp['id'] = $row->id;
-            $temp['full_name'] = stripslashes_deep(stripslashes_deep($row->full_name));
-            $temp['wp_user_id'] = $row->wp_user_id;
+            $temp['class_room_name'] = stripslashes_deep(stripslashes_deep($row->class_room_name));
+            $temp['class_room_purpose'] = $row->class_room_purpose;
+            $temp['class_room_descrption'] = $row->class_room_descrption;
+            $temp['class_in_a_week'] = $row->class_in_a_week;
+            $temp['class_duration'] = $row->class_duration;
             $temp['school_id'] = $row->school_id;
             $temp['teacher_id'] = $row->teacher_id;
+            $class_end_date = date("m/d/Y", strtotime($row->class_end_date));
+            $class_start_date = date("m/d/Y", strtotime($row->class_start_date));
             $created_date = date("m/d/Y", strtotime($row->created_date));
-            $temp['created_date'] = $created_date;
+            $temp['created_date'] = $row->created_date;
+            $temp['class_start_date'] = $class_start_date;
+            $temp['class_end_date'] = $class_end_date;
             $action = '<div style="display: flex;" class="wcp-actions">';
             
             $action .= '<input type="button" value="Edit" class="btn btn-info"  onclick="wcp_edit_row(' . $id . ')">&nbsp; &nbsp;';
             $action .= "<input type='button' value='Delete' class='btn btn-danger' onclick='wcp_delete_row(" . $id . ")'>&nbsp;";
-            //$action .= "<input type='button' value='Assign' class='btn btn-danger' onclick='wcp_assign_row(" . $id . ")'>&nbsp;";
             $action .= '</div>';
             
             $temp['action'] = $action;
@@ -234,10 +316,10 @@ class WCP_Common_Student_Model
         return $json_data;
     }
 
-    public function get_students_by_class_and_teacher($school_id, $teacher_id, $is_deleted = 1)
+    public function get_classes_by_class_and_teacher($school_id, $teacher_id, $is_deleted = 1)
     {
         if (empty($school_id) && empty($teacher_id)) {
-            return $this->get_students();
+            return $this->get_classes();
         } else {
             global $wpdb, $wp;
             $data = array();
@@ -297,7 +379,7 @@ class WCP_Common_Student_Model
     }
 
 
-    public function get_students_array()
+    public function get_classes_array()
     {
         global $wpdb;
         $table_name = $this->table_name;
@@ -307,7 +389,7 @@ class WCP_Common_Student_Model
     }
 
 
-    public function wcp_delete_student($id)
+    public function wcp_delete_class($id)
     {
         $table_name = $this->table_name;
         global $wpdb;
@@ -328,7 +410,7 @@ class WCP_Common_Student_Model
         }
     }
 
-    public function get_student_by_id($id, $inArray = false)
+    public function get_class_by_id($id, $inArray = false)
     {
         global $wpdb;
         $table_name = $this->table_name;
@@ -337,19 +419,7 @@ class WCP_Common_Student_Model
         $response['row'] = array();
         if (isset($id)) {
             $response['status'] = 1;
-            $row = $this->get_student($id);
-            $response['row'] = $row;
-            if($row){
-                $wp_user_id = $row->wp_user_id;
-                $user =  get_userdata($wp_user_id);
-                if($user){
-                    $response['row']->user_email = $user->data->user_email;
-                    $response['row']->first_name = get_user_meta( $user->data->ID, 'first_name', true );
-                    $response['row']->last_name = get_user_meta( $user->data->ID, 'last_name', true );
-                    $response['row']->wp_user_id = $user->data->ID;
-                }
-                
-            }
+            $response['row'] = $this->get_class($id);
         }
 
         if ($inArray) {
@@ -360,7 +430,7 @@ class WCP_Common_Student_Model
     }
 
 
-    public function get_student($id)
+    public function get_class($id)
     {
         global $wpdb;
         $json = [];
@@ -373,7 +443,7 @@ class WCP_Common_Student_Model
         return $row;
     }
 
-    public function get_student_by_wp_user_id($id)
+    public function get_class_by_wp_user_id($id)
     {
         global $wpdb;
         $table_name = $this->table_name;
@@ -401,44 +471,8 @@ class WCP_Common_Student_Model
     }
 
 
-    ## Send invitation to teacher for enrolment in school
-    public function student_invitation()
-    {
-        $validation = [
-            $_REQUEST['school_reference'],
-            $_REQUEST['teacher_reference'],
-            $_REQUEST['student_email']
-        ];
-        $response = $this->student_invitation_validation($validation);
-
-        if ($response) {
-            //$body = get_site_url() . '/' . 'student-registration/' . '?school_ref=' . $_REQUEST['school_reference'] . '&teacher_ref=' . $_REQUEST['teacher_reference'] . '&email=' . $_REQUEST['student_email'];
-            $body = get_site_url() . '/' . 'signup-now/' . '?school_ref=' . $_REQUEST['school_reference'] . '&query=' . $_REQUEST['teacher_reference'] .'&user_type=student&user_email='.$_REQUEST['student_email'];
-            if(email_exists($_REQUEST['student_email'])) {
-                return "userExists";
-            }
-            wcp_send_mail($_REQUEST['student_email'], 'Teacher Invite you to join school', $body);
-            return "Sent";
-            
-        } else {
-            return 'Missing Arguments';
-        }
-    }
-
-    public function student_invitation_validation($validationCheck)
-    {
-        $response = true;
-        foreach ($validationCheck as $value) {
-            if (empty($value)) {
-                $response = false;
-                break;
-            }
-        }
-        return $response;
-    }
-
 }
 
-if (class_exists("WCP_Common_Student_Model")) {
-    $WCP_Common_Student_Model = new WCP_Common_Student_Model();
+if (class_exists("WCP_Common_Class_Model")) {
+    $WCP_Common_Class_Model = new WCP_Common_Class_Model();
 }

@@ -1,7 +1,7 @@
 <?php
 include_once(dirname(__FILE__)."/Model.php");
 include(ABSPATH . "wp-includes/pluggable.php");
-class WCP_Common_Teacher_Controller {
+class WCP_Common_Class_Controller {
 
     public function __construct() {
         
@@ -9,8 +9,8 @@ class WCP_Common_Teacher_Controller {
 
 }
 
-if(class_exists("WCP_Common_Teacher_Controller")) {
-    $WCP_Common_Teacher_Controller = new WCP_Common_Teacher_Controller();
+if(class_exists("WCP_Common_Class_Controller")) {
+    $WCP_Common_Class_Controller = new WCP_Common_Class_Controller();
 
     
 }
