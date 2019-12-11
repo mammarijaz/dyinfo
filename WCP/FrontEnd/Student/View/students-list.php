@@ -1,5 +1,6 @@
 <?php
 global $WCP_Common_Teacher_Model;
+global $WCP_Common_Class_Model;
 $current_user = wp_get_current_user();
 
 $teacher_id = $school_id = 0;
@@ -10,6 +11,11 @@ if (!empty($current_user->id) && in_array('wcp_teacher', (array)$current_user->r
   $teacherData = $WCP_Common_Teacher_Model->get_teacher_by_wp_user_id($current_user->id, true);
   $teacher_id = $teacherData->id;
   $school_id = $teacherData->school_id;
+  $classes_list=$WCP_Common_Class_Model->get_classes_by_class_and_teacher($school_id, $teacher_id, 2);
+  $classes_list=$classes_list["data"] ;
+
+
+
 
 }
 ?>
@@ -59,6 +65,14 @@ if (!empty($current_user->id) && in_array('wcp_teacher', (array)$current_user->r
     </div>
 </div>
 <!-- Close Model Popup -->
+
+
+
+
+
+
+
+
 <?php } ?>
 
 <!--  Model Popup -->
@@ -105,6 +119,49 @@ if (!empty($current_user->id) && in_array('wcp_teacher', (array)$current_user->r
 </div>
 <!-- Close Model Popup -->
 
+
+
+<!--  Assign Class Room Popup -->
+<div class="modal fade" id="assignStudentModal" role="dialog" style="overflow-y: auto;">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <input type="hidden" name="student_wp_user_id" id="student_wp_user_id" value="<?php echo 0; ?>">
+        <div class="modal-content">
+            <div class="modal-header"><h4 class="modal-title">Assign Class</h4><button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="form-group col-sm-6">
+                        <label>Select Class: <span style="color: red">*</span></label><br>
+
+                <select class="form-control" id="classRoomSelect"  name="classRoomSelect">
+                    <option value="">--Select a value---</option>
+                    <?php
+                    foreach ($classes_list as $class)
+                    {
+                        echo "<option value='".$class['id']."'>".$class['class_room_name']."</option>";
+
+                    }
+                    ?>
+                </select>
+                    </div>
+
+                </div>
+                <div class="modal-footer"> <button type="cancel" class="btn btn-default" data-dismiss="modal">Close</button>  <button type="submit" class=" wcp-button btn btn-info" id="assignsaveform" data-text="<?php echo __("Save", "wcp") ?>"><?php echo __("Save", "wcp") ?></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
 <?php 
 $jsmerge = "";
 if($is_teacher){
@@ -116,13 +173,16 @@ if($is_teacher){
 
     jQuery(document).ready(function ($) {
 
+
         $ = jQuery;
         reload_table();
         var error_count=0;
+        $("#classRoomSelect").select2();
+
 
         var SPform =   $('#wcpStudentForm');
         //SPform.validate();
-
+      //  $('.js-example-basic-single').select2();
         SPform.submit(function(e){ 
           e.preventDefault();
           This = $(this);
@@ -230,6 +290,43 @@ if($is_teacher){
             }
         });
   }
+    function wcp_assign_row(id,class_room_id) {
+
+        if(class_room_id != "0")
+        {
+            jQuery("#classRoomSelect").val(class_room_id);
+
+
+        }
+        jQuery("#student_wp_user_id").val(id);
+        jQuery("#assignStudentModal").modal("show");
+
+       /* jQuery.ajax({
+            type: 'POST',
+            url: '<?php //echo admin_url('admin-ajax.php'); ?>',
+            dataType: "json",
+            data: {"action": "WCP_Frontend_Student_Modal::get_student_by_id", id: id},
+            success: function (data) {
+
+                var result = JSON.parse(data);
+                if (result.status === 1) {
+                    var SPform =   jQuery('#wcpStudentForm');
+
+
+                    SPform.find(jQuery("#input_email")).val(result.row.user_email);
+                    SPform.find(jQuery("#input_first_name")).val(result.row.first_name);
+                    SPform.find(jQuery("#input_last_name")).val(result.row.last_name);
+                    SPform.find(jQuery("#wp_user_id")).val(result.row.wp_user_id);
+                    SPform.find(jQuery("#formaction")).val("WCP_Frontend_Student_Modal::edit_student");
+                    SPform.find(jQuery("#edit_id")).val(result.row.id);
+
+                    jQuery(".modal-title").html("Edit");
+                    jQuery('#AddNewStudentModal').modal('show');
+
+                }
+            }
+        }); */
+    }
   function add_new_btn(){
     var SPform =   jQuery('#wcpForm');
     jQuery('#formaction').val("WCP_Frontend_Student_Modal::add_student");
@@ -245,7 +342,45 @@ if($is_teacher){
     
   }
 
-  function invite_student_btn(){
+
+    //.submit(function(e){
+
+    $("#assignsaveform").on('click',function(e){
+        e.preventDefault();
+       // This = $(this);
+        // if(SPform.valid()){}
+
+       // This.find("#submitform").attr("disabled", "disable");
+      //  var input_data = This.serialize();
+      //  var ajaxurl = This.attr("action")
+        //
+        //  ;
+
+        var wp_user_id=jQuery("#student_wp_user_id").val();
+        var class_room_id=jQuery("#student_wp_user_id").val();
+        $('.load-spinner').addClass("show");
+
+        $.post(ajaxurl, input_data, function(response) {
+            var response = JSON.parse(response);
+            if(response.status == 1 && response.success == 1){
+                $('.load-spinner').removeClass("show");
+
+                jQuery("#assignStudentModal").modal('hide');
+              //  SPform[0].reset();
+                reload_table();
+            }
+            if(response.status == 0 || response.success == 0){
+                alert(response.error);
+            }
+            $(this).removeAttr("disabled");
+        });
+
+
+    });
+
+
+
+    function invite_student_btn(){
     jQuery('#InviteStudentModal').modal('show');
   }
    

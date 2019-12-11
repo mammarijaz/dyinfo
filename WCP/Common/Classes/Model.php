@@ -357,8 +357,7 @@ class WCP_Common_Class_Model
 
             foreach ($service_price_list as $row) {
                 $temp['id'] = $row->id;
-                $temp['full_name'] = stripslashes_deep(stripslashes_deep($row->full_name));
-                $temp['wp_user_id'] = $row->wp_user_id;
+                $temp['class_room_name'] = $row->class_room_name;
                 $temp['school_id'] = $row->school_id;
                 $temp['teacher_id'] = $row->teacher_id;
                 $temp['is_deleted'] = $row->is_deleted;

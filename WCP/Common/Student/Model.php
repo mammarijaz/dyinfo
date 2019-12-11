@@ -178,9 +178,9 @@ class WCP_Common_Student_Model
         $obj_result->is_success = false;
         //$requestData = $_REQUEST;
         //This is for Search
-        $where = " WHERE 1 = 1 AND is_deleted = 0 ";
-        $table_name = $this->table_name;
-        $sql = "SELECT * FROM $table_name " . $where;
+        $where = " WHERE 1 = 1 AND s.is_deleted = 0 ";
+       // $table_name = $this->table_name;
+        $sql = "SELECT s.*,IFNULL(e.class_room_id,'0') as \"class_room_id\" FROM wcp_students s "."  LEFT JOIN wcp_class_enrolment e on s.wp_user_id=e.wp_user_id". $where;
         //This is for pagination
         if (isset($requestData['teacher_id']) && $requestData['teacher_id'] != '' && $requestData['teacher_id'] != 0) {
             $sql .= " And teacher_id =" . $requestData['teacher_id'];
@@ -216,7 +216,7 @@ class WCP_Common_Student_Model
             
             $action .= '<input type="button" value="Edit" class="btn btn-info"  onclick="wcp_edit_row(' . $id . ')">&nbsp; &nbsp;';
             $action .= "<input type='button' value='Delete' class='btn btn-danger' onclick='wcp_delete_row(" . $id . ")'>&nbsp;";
-            //$action .= "<input type='button' value='Assign' class='btn btn-danger' onclick='wcp_assign_row(" . $id . ")'>&nbsp;";
+            $action .= "<input type='button' value='Assign' class='btn btn-danger' onclick='wcp_assign_row(" . $id . ",".$row->class_room_id.")'>&nbsp;";
             $action .= '</div>';
             
             $temp['action'] = $action;

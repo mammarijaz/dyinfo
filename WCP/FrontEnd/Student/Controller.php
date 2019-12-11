@@ -12,6 +12,10 @@ class WCP_FrontEnd_Student_Controller
 
     public function add_css_and_js() {
 
+            wp_register_style( 'wcp-select2css', 'https://cdn.jsdelivr.net/npm/select2@4.0.12/dist/css/select2.min.css' );
+            wp_enqueue_style( 'wcp-select2css' );
+
+            wp_enqueue_script( 'wcp-bootstrapcdn-js', 'https://cdn.jsdelivr.net/npm/select2@4.0.12/dist/js/select2.min.js');
        
            /* // You need styling for the datepicker. For simplicity I've linked to Google's hosted jQuery UI CSS.
             wp_register_style( 'jquery-ui', '//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css' );
